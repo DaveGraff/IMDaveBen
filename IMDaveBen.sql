@@ -67,7 +67,7 @@ CREATE TABLE Award(
 CREATE TABLE Episode(
 	EpisodeName		CHAR(30) NOT NULL,
     	ShowTitle		CHAR(30),
-    	ShowYear		CHAR(30),
+    	ShowYear		INTEGER,
 	EpisodeNum		INTEGER,
     	Season			INTEGER,
     	Synopsis		TEXT,
