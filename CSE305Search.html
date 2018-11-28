@@ -7,12 +7,12 @@
 <body>
   <img src="logo.png" alt="IMDaveBen" class = "centerImage">
     <div class = "center">
-	    <form method="post" action="/">
-		<select>
+	    <form method="post" action="/query" id="query">
+		<select name="type" form="query">
 			<option value="People"><b>People</b></option>
 			<option value="Titles">Titles</option>
   		</select>
-		<input type="text" name="Query[name]" placeholder="Search">
+		<input type="text" name="name" placeholder="Search">
     		<input type="submit" value="Submit">
 	    </form>
 	</div>

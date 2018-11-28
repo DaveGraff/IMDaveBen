@@ -4,7 +4,10 @@ var path = require('path');
 var dir = path.dirname(require.main.filename);
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = new express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', function(req, res){
 	res.sendFile(dir + '\\CSE305Search.html');
@@ -16,6 +19,11 @@ app.get('/style.css', function(req, res){
 
 app.get('/logo.png', function(req, res){
 	res.sendFile(dir + '\\logo.png');
+});
+
+app.post('/query', (req, res) => {
+	const postBody = req.body;
+	console.log(postBody);
 });
 
 app.listen(8080);
