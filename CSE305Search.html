@@ -5,16 +5,29 @@
   	<title>IMDaveBen</title>
 </head>
 <body>
-  <img src="logo.png" alt="IMDaveBen" class = "centerImage">
-    <div class = "center">
-	    <form method="post" action="/query" id="query">
-		<select name="type" form="query">
-			<option value="People"><b>People</b></option>
+	<img src="logo.png" alt="IMDaveBen" class = "centerImage">
+	<div class = "center">
+		<form id="query" method="post" action="/CSE305Response.html">
+		<select id="typeSel" name="type" form="query">
 			<option value="Titles">Titles</option>
+			<option value="People">People</option>
   		</select>
 		<input type="text" name="name" placeholder="Search">
-    		<input type="submit" value="Submit">
-	    </form>
+		<input type="submit" value="Submit">
+		</form>
 	</div>
+	<script>
+		function loadResults() {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					document.getElementById("Results").innerHTML =
+					this.responseText;
+				}
+			}
+			xhttp.open('post', '');
+			xhttp.send();
+		}
+	</script>
 </body>
 </html>
