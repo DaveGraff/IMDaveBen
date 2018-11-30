@@ -26,27 +26,26 @@ con.query("CREATE TABLE Award(PersonID INTEGER, ShowTitle CHAR(30), ShowYear INT
 con.query("CREATE TABLE Episode(EpisodeName CHAR(30) NOT NULL, ShowTitle CHAR(30), ShowYear INTEGER, EpisodeNum INTEGER, Season INTEGER, Synopsis TEXT, CHECK(EpisodeNum > 0 AND Season > 0), PRIMARY KEY(ShowTitle, ShowYear, EpisodeNum, Season), FOREIGN KEY(ShowTitle, ShowYear) REFERENCES Shows(ShowTitle, ShowYear));");
 
 //Insert data
-con.query("INSERT INTO Studio(StudioName, Location) VALUES ('Paramount', 'USA')");
-con.query("INSERT INTO Studio(StudioName, Location) VALUES ('Fox', 'USA')");
-con.query("INSERT INTO Studio(StudioName, Location) VALUES ('Universal', 'USA')");
-con.query("INSERT INTO Studio(StudioName, Location) VALUES ('Sony', 'USA')");
-con.query("INSERT INTO Studio(StudioName, Location) VALUES ('TriStar', 'USA')");
-con.query("INSERT INTO Studio(StudioName, Location) VALUES ('Walt Disney', 'USA')");
+con.query("INSERT INTO Studio VALUES ('Paramount', 'USA')");
+con.query("INSERT INTO Studio VALUES ('Fox', 'USA')");
+con.query("INSERT INTO Studio VALUES ('Universal', 'USA')");
+con.query("INSERT INTO Studio VALUES ('Sony', 'USA')");
+con.query("INSERT INTO Studio VALUES ('TriStar', 'USA')");
+con.query("INSERT INTO Studio VALUES ('Walt Disney', 'USA')");
 
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (0, 'Tom Cruise', NULL, 'Syracuse, NY', NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (1, 'Robert Downey Jr.', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (2, 'Scarlett Johansson', NULL, NULL, NULL, 'Female', 'A cool lady')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (3, 'Tom Hanks', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (4, 'Brad Pitt', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (5, 'George Clooney', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (6, 'Will Smith', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (7, 'Matt Damon', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (8, 'Johnny Depp', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (9, 'Dwayne Johnson', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (10, 'Harrison Ford', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (11, 'Jim Carrey', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (12, 'Meryl Streep', NULL, NULL, NULL, 'Female', 'A cool lady')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (13, 'Jennifer Lawrence', NULL, NULL, NULL, 'Female', 'A cool lady')");
-con.query("INSERT INTO Person(Id, PersonName, DOB, Hometown, Height, Gender, Biography) VALUES (14, 'Natalie Portman', NULL, NULL, NULL, 'Female', 'A cool lady')");
-
+con.query("INSERT INTO Person VALUES (0, 'Tom Cruise', NULL, 'Syracuse, NY', NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (1, 'Robert Downey Jr.', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (2, 'Scarlett Johansson', NULL, NULL, NULL, 'Female', 'A cool lady')");
+con.query("INSERT INTO Person VALUES (3, 'Tom Hanks', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (4, 'Brad Pitt', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (5, 'George Clooney', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (6, 'Will Smith', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (7, 'Matt Damon', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (8, 'Johnny Depp', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (9, 'Dwayne Johnson', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (10, 'Harrison Ford', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (11, 'Jim Carrey', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (12, 'Meryl Streep', NULL, NULL, NULL, 'Female', 'A cool lady')");
+con.query("INSERT INTO Person VALUES (13, 'Jennifer Lawrence', NULL, NULL, NULL, 'Female', 'A cool lady')");
+con.query("INSERT INTO Person VALUES (14, 'Natalie Portman', NULL, NULL, NULL, 'Female', 'A cool lady')");
 //con.query(INSERT INTO Show(Title, Year));
