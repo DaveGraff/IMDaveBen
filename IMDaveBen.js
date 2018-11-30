@@ -135,7 +135,21 @@ function buildPage(type, list, res) {
 		var body = '';
 		if ((type == 'Titles' || type == 'People') && list != '') {
 			console.log('Appending results...');
-			body += list;
+			body += '<table align=\"center\">';
+			if (type == 'People') {
+				body += '<th>Name</th><th>ID #</th>';
+				var i;
+				for (i = 0; i < list.length; i++) {
+					body += '<tr><td>' + list[i].PersonName + '</td><td>' + list[i].Id + '</tr>';
+				}
+			} else if (type == 'Titles') {
+				body += '<th>Title</th><th>Year</th>';
+				var i;
+				for (i = 0; i < list.length; i++) {
+					body += '<tr><td>' + list[i].ShowTitle + '</td><td>' + list[i].ShowYear + '</tr>';
+				}
+			}
+			body += '</table>'
 		} else {
 			body += "<h1>No results found!</h1>";
 		}
