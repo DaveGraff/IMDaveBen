@@ -7,34 +7,44 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = new express();
 
+//Setup for body-parser module.
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//Respond to general requests with main page CSE305Search.html.
 app.get('/', function(req, res){
 	res.sendFile(dir + '\\CSE305Search.html');
 });
 
+//Respond to search queries with CSE305Response.html.
 app.get('/CSE305Response.html', function (req, res) {
 	res.sendFile(dir + '\\CSE305Response.html');
 });
 
+//Send style.css on request for each webpage.
 app.get('/style.css', function(req, res){
 	res.sendFile(dir + '\\style.css');
 });
 
+//Send logo image file on request for each page.
 app.get('/logo.png', function(req, res){
 	res.sendFile(dir + '\\logo.png');
 });
 
+//Handle post requests for search queries from CSE305Search.html.
 app.post('/CSE305Response.html', (req, res) => {
+	//Retrieve request body
 	const postBody = req.body;
 	var page;
 	console.log(postBody);
 	if (postBody.type == 'People') {
 		console.log("People");
+		//If search wuery was for a Person, call getPeople()
 		getPeople(postBody.name, function (person) {
 			if (person == undefined || person.length == 0) {
 				console.log("No results found!");
+				//If no Person was found, call buildPage() with "Null" type
 				page = buildPage("Null", person);
+				//Send CSE305Response.html only when buildPage() returns
 				page.then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
@@ -154,7 +164,7 @@ function buildPage(type, list, res) {
 			body += "<h1>No results found!</h1>";
 		}
 		var html = ('<!DOCTYPE html><html><head><link rel=\"stylesheet\" href=\"style.css\"></head><body><img src=\"logo.png\" alt=\"IMDaveBen\" class = \"centerImage\">'
-					+ '<div class=\"center\">' + body + '<a href=\"/\">Back to query page</a></div></body></html>');
+					+ '<div class=\"center\"><a href=\"/\">Back to query page</a>' + body + '</div></body></html>');
 		fs.writeFile(dir + "\\CSE305Response.html", html, function (err) {
 			if (err) { reject(err);	}
 			resolve(true);
