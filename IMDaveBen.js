@@ -117,6 +117,27 @@ function getPerson(id, callback){
 	});
 }
 
+function getPersonCastRoles(id, callback){
+	con.query("SELECT * FROM CastMembers WHERE Id = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
+	if (err) throw err;
+		return callback(result);
+	});
+}
+
+function getPersonCrewRoles(id, callback){
+	con.query("SELECT * FROM CrewMembers WHERE Id = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
+	if (err) throw err;
+		return callback(result);
+	});
+}
+
+function getPersonAwards(id, callback){
+	con.query("SELECT AwardName, YearAwarded FROM Award WHERE Id = " + id + " ORDER BY YearAwarded;", function (err, result, fields) {
+	if (err) throw err;
+		return callback(result);
+	});
+}
+
 //Return a specific Title given the key
 function getTitle(name, year, callback){
 	con.query("SELECT * FROM Shows WHERE ShowTitle = " + name + "AND ShowYear = " + year + ";", function (err, result, fields) {
@@ -164,5 +185,5 @@ function buildPage(type, list, res) {
 
 //Generate HTML code for response
 function buildHTML(type, list) {
-	
+
 }
