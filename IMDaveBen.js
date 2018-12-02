@@ -43,8 +43,8 @@ app.post('/CSE305Response.html', (req, res) => {
 			if (person == undefined || person.length == 0) {
 				console.log("No results found!");
 				/* If no Person was found, call buildPage() with "Null" type */
-				page = buildPage("Null", person);
-				/* Send CSE305Response.html only when buildPage() returns */
+				page = buildResponsePage("Null", person);
+				/* Send CSE305Response.html only when buildResponsePage() returns */
 				page.then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
@@ -53,9 +53,9 @@ app.post('/CSE305Response.html', (req, res) => {
 				function(err) { console.log(err); });
 			} else {
 				console.log(person);
-				/* Call buildPage() to set up HTML response */
-				page = buildPage(postBody.type, person, res);
-				/* Send CSE305Response.html only when buildPage() returns */
+				/* Call buildResponsePage() to set up HTML response */
+				page = buildResponsePage(postBody.type, person);
+				/* Send CSE305Response.html only when buildResponsePage() returns */
 				page.then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
@@ -70,9 +70,9 @@ app.post('/CSE305Response.html', (req, res) => {
 		getTitles(postBody.name, function (title) {
 			if (title == undefined || title.length == 0) {
 				console.log("No results found!");
-				/* If no Shows were found, call buildPage() with "Null" type */
-				page = buildPage("Null", title, res);
-				/* Send CSE305Response only when buildPage() returns */
+				/* If no Shows were found, call buildResponsePage() with "Null" type */
+				page = buildResponsePage("Null", title);
+				/* Send CSE305Response only when buildResponsePage() returns */
 				page.then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
@@ -81,9 +81,9 @@ app.post('/CSE305Response.html', (req, res) => {
 				function(err) { console.log(err); });
 			} else {
 				console.log(title);
-				/* Call buildPage() to set up HTML response */
-				page = buildPage(postBody.type, title, res);
-				/* Send CSE305Response.html only when buildPage() returns */
+				/* Call buildResponsePage() to set up HTML response */
+				page = buildResponsePage(postBody.type, title);
+				/* Send CSE305Response.html only when buildResponsePage() returns */
 				page.then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
@@ -93,6 +93,13 @@ app.post('/CSE305Response.html', (req, res) => {
 			}
 		});
 	}
+});
+
+app.post('/CSE305Entry.html', (req, res) => {
+	/* Retrieve request body */
+	const postBody = req.body;
+	var page;
+	console.log(postBody);
 });
 
 /* Start the server by listening on port 8080. */
@@ -137,7 +144,6 @@ function getPerson(id, callback){
 	});
 }
 
-<<<<<<< HEAD
 function getPersonCastRoles(id, callback){
 	con.query("SELECT * FROM CastMembers WHERE Id = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
 	if (err) throw err;
@@ -159,10 +165,7 @@ function getPersonAwards(id, callback){
 	});
 }
 
-//Return a specific Title given the key
-=======
 /* Return a specific Title given its primary key (ShowName, ShowYear) */
->>>>>>> 54df54bfe152d06f67236ed1831abe2b16383b08
 function getTitle(name, year, callback){
 	con.query("SELECT * FROM Shows WHERE ShowTitle = " + name + "AND ShowYear = " + year + ";", function (err, result, fields) {
 	if (err) throw err;
@@ -175,7 +178,7 @@ var fs = require('fs');
 var filename = dir + '\\CSE305Response.html';
 
 /* Build CSE305Response.html by writing with file I/O. */
-function buildPage(type, list, res) {
+function buildResponsePage(type, list) {
 	/* Return a Promise to have response wait for write to complete */
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Response.html */
@@ -185,26 +188,33 @@ function buildPage(type, list, res) {
 		if ((type == 'Titles' || type == 'People') && list != '') {
 			console.log('Appending results...');
 			/* If results list is not empty, add <table> to HTML body */
-			body += '<table align=\"center\">';
 			if (type == 'People') {
+				body += '<form id=\"personEntry\" method=\"post\" action=\"/CSE305Entry.html\"><table align=\"center\">';
 				/* Set up headers for Person attributes */
 				body += '<th>Name</th><th>ID #</th>';
 				/* Create a new row in the table for each search result */
 				var i;
 				for (i = 0; i < list.length; i++) {
-					body += '<tr><td>' + list[i].PersonName + '</td><td>' + list[i].Id + '</tr>';
+					body += '<tr><td>' + list[i].PersonName + '</td><td>'
+					+ '<input type=\"hidden\" name=\"Type\" value=\"Person\">'
+					+ '<button type=\"submit\" name=\"ID\" value=\"' + list[i].Id
+					+ '\" class=\"link-button\">' + list[i].Id + '</button></td></tr>';
 				}
 			} else if (type == 'Titles') {
+				body += '<form id=\"showEntry\" method=\"post\" action=\"/CSE305Entry.html\"><table align=\"center\">';
 				/* Set up headers for Show attributes */
 				body += '<th>Title</th><th>Year</th>';
 				/* Create a new row in the table for each search result */
 				var i;
 				for (i = 0; i < list.length; i++) {
-					body += '<tr><td>' + list[i].ShowTitle + '</td><td>' + list[i].ShowYear + '</tr>';
+					body += '<tr><td>' + list[i].ShowTitle + '</td><td>'
+					+ '<input type=\"hidden\" name=\"Type\" value=\"Show\">'
+					+ '<button type=\"submit\" name=\"Key\" value=\"' + list[i].ShowTitle + ', ' + list[i].ShowYear
+					+ '\" class=\"link-button\">' + list[i].ShowYear + '</button></td></tr>';
 				}
 			}
 			/* Close the table and finish the body var */
-			body += '</table>'
+			body += '</table></form>'
 		} else {
 			/* If results list is empty, display "No results found!" on response page */
 			body += "<h1>No results found!</h1>";
@@ -218,13 +228,8 @@ function buildPage(type, list, res) {
 			resolve(true);
 		});
 	});
-<<<<<<< HEAD
 }
 
-//Generate HTML code for response
-function buildHTML(type, list) {
-
+/* Build CSE305Entry.html by writing with file I/O. */
+function buildEntryPage(type, list, res) {
 }
-=======
-}
->>>>>>> 54df54bfe152d06f67236ed1831abe2b16383b08
