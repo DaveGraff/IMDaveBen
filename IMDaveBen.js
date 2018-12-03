@@ -191,7 +191,7 @@ function getPeople(search, callback){
 
 /* Returns the names & IDs for a given show search. */
 function getTitles(search, callback){
-	con.query("SELECT ShowTitle, ShowYear FROM Shows WHERE ShowTitle LIKE'%" + search + "%'", function (err, result, fields) {
+	con.query("SELECT ShowTitle, ShowYear FROM Shows WHERE ShowTitle LIKE'%" + search + "%' ORDER BY ShowYear DESC;", function (err, result, fields) {
 	if (err) throw err;
 		return callback(result);
 	});
@@ -240,7 +240,7 @@ function buildResponsePage(type, list) {
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Response.html */
 		fs.truncate(responseFile, 0, function() {console.log("Response file cleared!");});
-		
+
 		var body = '';
 		if ((type == 'Titles' || type == 'People') && list != '') {
 			console.log('Appending results...');
@@ -298,7 +298,7 @@ function buildPersonEntry(type, entry) {
 			console.log("Response file cleared!");
 			}
 		);
-		
+
 		var html = '<!DOCTYPE html><html>'
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
 					+ '<title>IMDaveBen</title></head>'
@@ -316,7 +316,12 @@ function buildPersonEntry(type, entry) {
 						+ '<br>Gender:' + entry[0].Gender
 						+ '</p>';
 				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
-				
+						+ '<p>DOB: ' + entry[0].DOB
+						+ '<br>Hometown: ' + entry[0].Hometown
+						+ '<br>Height: ' + entry[0].Height
+						+ '<br>Gender: ' + entry[0].Gender
+						+ '</p>';
+				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
 				html += '<h3>Cast Roles</h3>';
 				html += '<h3>Crew Roles</h3>';
 				html += '<h3>Awards</h3>';
@@ -340,7 +345,7 @@ function buildShowEntry(type, entry) {
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Entry.html */
 		fs.truncate(entryFile, 0, function() {console.log("Response file cleared!");});
-		
+
 		var html = '<!DOCTYPE html><html>'
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
 					+ '<title>IMDaveBen</title></head>'
