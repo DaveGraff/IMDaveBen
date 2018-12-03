@@ -7,27 +7,35 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = new express();
 
+/* Generate response page for search query. */
+const fs = require('fs');
+const logoFile = dir + '\\logo.png';
+const styleFile = dir + '\\style.css';
+const searchFile = dir + '\\CSE305Search.html';
+const responseFile = dir + '\\CSE305Response.html';
+const entryFile = dir + '\\CSE305Entry.html';
+
 /* Setup for body-parser module. */
 app.use(bodyParser.urlencoded({ extended: false }));
 
 /* Respond to general requests with main page CSE305Search.html. */
 app.get('/', function(req, res){
-	res.sendFile(dir + '\\CSE305Search.html');
+	res.sendFile(searchFile);
 });
 
 /* Respond to search queries with CSE305Response.html. */
 app.get('/CSE305Response.html', function (req, res) {
-	res.sendFile(dir + '\\CSE305Response.html');
+	res.sendFile(responseFile);
 });
 
 /* Send style.css on request for each webpage. */
 app.get('/style.css', function(req, res){
-	res.sendFile(dir + '\\style.css');
+	res.sendFile(styleFile);
 });
 
 /* Send logo image file on request for each page. */
 app.get('/logo.png', function(req, res){
-	res.sendFile(dir + '\\logo.png');
+	res.sendFile(logoFile);
 });
 
 /* Handle post requests for search queries from CSE305Search.html. */
@@ -100,6 +108,53 @@ app.post('/CSE305Entry.html', (req, res) => {
 	const postBody = req.body;
 	var page;
 	console.log(postBody);
+	if (postBody.Type == 'Person') {
+		getPerson(postBody.Id, function(person) {
+			if (person == '' || person.length == 0) {
+				console.log('Person not found!');
+				page = buildPersonEntry('Null', person);
+				page.then(
+				function(result) {
+					if (result) { console.log('Finished building entry page!'); }
+					res.sendFile(entryFile);
+				},
+				function(err) { console.log(err); });
+			} else {
+				console.log(person);
+				page = buildPerson(postBody.Type, person);
+				page.then(
+				function(result) {
+					if (result) { console.log('Finished building entry page!'); }
+					res.sendFile(entryFile);
+				},
+				function(err) { console.log(err); });
+			}
+		});
+	} else if (postBody.Type == 'Show') {
+		/*
+		getShow(postBody.Key, function(person) {
+			if (show == '' || show.length == 0) {
+				console.log('Show not found!');
+				page = buildShowEntry('Null', show);
+				page.then(
+				function(result) {
+					if (result) { console.log('Finished building entry page!'); }
+					res.sendFile(entryFile);
+				},
+				function(err) { console.log(err); });
+			} else {
+				console.log(show);
+				page = buildShowEntry(postBody.Type, person);
+				page.then(
+				function(result) {
+					if (result) { console.log('Finished building entry page!'); }
+					res.sendFile(entryFile);
+				},
+				function(err) { console.log(err); });
+			}
+		});
+		*/
+	}
 });
 
 /* Start the server by listening on port 8080. */
@@ -173,17 +228,18 @@ function getTitle(name, year, callback){
 	});
 }
 
-/* Generate response page for search query. */
-var fs = require('fs');
-var filename = dir + '\\CSE305Response.html';
-
 /* Build CSE305Response.html by writing with file I/O. */
 function buildResponsePage(type, list) {
 	/* Return a Promise to have response wait for write to complete */
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Response.html */
+<<<<<<< HEAD
 		fs.truncate(filename, 0, function() {console.log("Response file cleared!");});
 
+=======
+		fs.truncate(responseFile, 0, function() {console.log("Response file cleared!");});
+		
+>>>>>>> d53e7542539b7621e2291a213a36e5a4d7848ead
 		var body = '';
 		if ((type == 'Titles' || type == 'People') && list != '') {
 			console.log('Appending results...');
@@ -223,7 +279,7 @@ function buildResponsePage(type, list) {
 		const html = ('<!DOCTYPE html><html><head><link rel=\"stylesheet\" href=\"style.css\"></head><body><img src=\"logo.png\" alt=\"IMDaveBen\" class = \"centerImage\">'
 					+ '<div class=\"center\"><a href=\"/\">Back to query page</a>' + body + '</div></body></html>');
 		/* Write completed HTML code to CSE305Response.html */
-		fs.writeFile(dir + "\\CSE305Response.html", html, function (err) {
+		fs.writeFile(responseFile, html, function (err) {
 			if (err) { reject(err);	}
 			resolve(true);
 		});
@@ -231,5 +287,79 @@ function buildResponsePage(type, list) {
 }
 
 /* Build CSE305Entry.html by writing with file I/O. */
+<<<<<<< HEAD
 function buildEntryPage(type, list, res) {
 }
+=======
+function buildPersonEntry(type, entry) {
+	/* Return a Promise to have response wait for write to complete */
+	return new Promise((resolve, reject) => {
+		/* Truncate server's copy of CSE305Entry.html */
+		fs.truncate(entryFile, 0, function() {
+			console.log("Response file cleared!");
+			}
+		);
+		
+		var html = '<!DOCTYPE html><html>'
+					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
+					+ '<title>IMDaveBen</title></head>'
+					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\"><div class = \"center\">';
+		if (type == 'Null') {
+			html += '<h1>Entry does not exist!<h1>';
+		} else if (type == 'Person' && list != '') {
+			console.log('Building entry page...');
+			if (type == 'Person') {
+				html += '<h1>' + entry.PersonName + '</h1>'
+						+ '<p>DOB:' + entry.DOB
+						+ '<br>Hometown:' + entry.Hometown
+						+ '<br>Height:' + entry.Height
+						+ '<br>Gender:' + entry.Gender
+						+ '</p>';
+				html += '<h2>Biography</h2><p>' + entry.Bio + '</p>';
+				
+				html += '<h3>Cast Roles</h3>';
+				html += '<h3>Crew Roles</h3>';
+				html += '<h3>Awards</h3>';
+			} else {
+				console.log('Invalid entry request!');
+				reject('Invalid entry request!');
+			}
+			/* Complete HTML code by closing tags. */
+		}
+		html += '</div></body></html>';
+		/* Write completed HTML code to CSE305Response.html */
+		fs.writeFile(entryFile, html, function (err) {
+			if (err) { reject(err);	}
+			resolve(true);
+		});
+	});
+}
+
+function buildShowEntry(type, entry) {
+	/* Return a Promise to have response wait for write to complete */
+	return new Promise((resolve, reject) => {
+		/* Truncate server's copy of CSE305Entry.html */
+		fs.truncate(entryFile, 0, function() {console.log("Response file cleared!");});
+		
+		var html = '<!DOCTYPE html><html>'
+					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
+					+ '<title>IMDaveBen</title></head>'
+					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\"><div class = \"center\">';
+		if (type == 'Null') {
+			html += '<h1>Entry does not exist!<h1>';
+		} else if (type == 'Show' && list != '') {
+			console.log('Building entry page...');
+		} else {
+			console.log('Invalid entry request!');
+			reject('Invalid entry request!');
+		}
+		/* Complete HTML code by closing tags. */
+		html += '</div></body></html>';
+		/* Write completed HTML code to CSE305Response.html */
+		fs.writeFile(entryFile, html, function (err) {
+			if (err) { reject(err);	}
+			resolve(true);
+		});
+	});
+}
+>>>>>>> d53e7542539b7621e2291a213a36e5a4d7848ead
