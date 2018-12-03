@@ -130,7 +130,7 @@ function getPeople(search, callback){
 
 /* Returns the names & IDs for a given show search. */
 function getTitles(search, callback){
-	con.query("SELECT ShowTitle, ShowYear FROM Shows WHERE ShowTitle LIKE'%" + search + "%'", function (err, result, fields) {
+	con.query("SELECT ShowTitle, ShowYear FROM Shows WHERE ShowTitle LIKE'%" + search + "%' ORDER BY ShowYear DESC;", function (err, result, fields) {
 	if (err) throw err;
 		return callback(result);
 	});
@@ -183,7 +183,7 @@ function buildResponsePage(type, list) {
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Response.html */
 		fs.truncate(filename, 0, function() {console.log("Response file cleared!");});
-		
+
 		var body = '';
 		if ((type == 'Titles' || type == 'People') && list != '') {
 			console.log('Appending results...');
