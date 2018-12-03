@@ -109,7 +109,7 @@ app.post('/CSE305Entry.html', (req, res) => {
 	var page;
 	console.log(postBody);
 	if (postBody.Type == 'Person') {
-		getPerson(postBody.Id, function(person) {
+		getPerson(postBody.ID, function(person) {
 			if (person == '' || person.length == 0) {
 				console.log('Person not found!');
 				page = buildPersonEntry('Null', person);
@@ -121,7 +121,7 @@ app.post('/CSE305Entry.html', (req, res) => {
 				function(err) { console.log(err); });
 			} else {
 				console.log(person);
-				page = buildPerson(postBody.Type, person);
+				page = buildPersonEntry(postBody.Type, person);
 				page.then(
 				function(result) {
 					if (result) { console.log('Finished building entry page!'); }
@@ -233,13 +233,8 @@ function buildResponsePage(type, list) {
 	/* Return a Promise to have response wait for write to complete */
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Response.html */
-<<<<<<< HEAD
-		fs.truncate(filename, 0, function() {console.log("Response file cleared!");});
-
-=======
 		fs.truncate(responseFile, 0, function() {console.log("Response file cleared!");});
-		
->>>>>>> d53e7542539b7621e2291a213a36e5a4d7848ead
+
 		var body = '';
 		if ((type == 'Titles' || type == 'People') && list != '') {
 			console.log('Appending results...');
@@ -287,10 +282,6 @@ function buildResponsePage(type, list) {
 }
 
 /* Build CSE305Entry.html by writing with file I/O. */
-<<<<<<< HEAD
-function buildEntryPage(type, list, res) {
-}
-=======
 function buildPersonEntry(type, entry) {
 	/* Return a Promise to have response wait for write to complete */
 	return new Promise((resolve, reject) => {
@@ -299,24 +290,24 @@ function buildPersonEntry(type, entry) {
 			console.log("Response file cleared!");
 			}
 		);
-		
+
 		var html = '<!DOCTYPE html><html>'
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
 					+ '<title>IMDaveBen</title></head>'
 					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\"><div class = \"center\">';
 		if (type == 'Null') {
 			html += '<h1>Entry does not exist!<h1>';
-		} else if (type == 'Person' && list != '') {
+		} else if (type == 'Person' && entry != '') {
 			console.log('Building entry page...');
 			if (type == 'Person') {
-				html += '<h1>' + entry.PersonName + '</h1>'
-						+ '<p>DOB:' + entry.DOB
-						+ '<br>Hometown:' + entry.Hometown
-						+ '<br>Height:' + entry.Height
-						+ '<br>Gender:' + entry.Gender
+				html += '<h1>' + entry[0].PersonName + '</h1>'
+						+ '<p>DOB: ' + entry[0].DOB
+						+ '<br>Hometown: ' + entry[0].Hometown
+						+ '<br>Height: ' + entry[0].Height
+						+ '<br>Gender: ' + entry[0].Gender
 						+ '</p>';
-				html += '<h2>Biography</h2><p>' + entry.Bio + '</p>';
-				
+				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
+
 				html += '<h3>Cast Roles</h3>';
 				html += '<h3>Crew Roles</h3>';
 				html += '<h3>Awards</h3>';
@@ -340,7 +331,7 @@ function buildShowEntry(type, entry) {
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Entry.html */
 		fs.truncate(entryFile, 0, function() {console.log("Response file cleared!");});
-		
+
 		var html = '<!DOCTYPE html><html>'
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
 					+ '<title>IMDaveBen</title></head>'
@@ -362,4 +353,3 @@ function buildShowEntry(type, entry) {
 		});
 	});
 }
->>>>>>> d53e7542539b7621e2291a213a36e5a4d7848ead
