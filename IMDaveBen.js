@@ -338,11 +338,7 @@ function buildPersonEntry(type, entry) {
 			getPersonCastRoles(entry[0].Id, function(result) {
 				cast = result;
 				html += '<h1>' + entry[0].PersonName + '</h1>'
-					+ '<p>DOB:' + entry[0].DOB
-					+ '<br>Hometown: ' + entry[0].Hometown
-					+ '<br>Height: ' + entry[0].Height
-					+ '<br>Gender: ' + entry[0].Gender
-					+ '</p>';
+					+ '<p>' + entry[0].Gender + ' | ' + entry[0].Height + ' | Born ' +  entry[0].DOB + ' in ' + entry[0].Hometown + '</p>';
 				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
 				/* Query database for list of roles that this Person has had */
 				html += '<h2>Credits</h2>';
