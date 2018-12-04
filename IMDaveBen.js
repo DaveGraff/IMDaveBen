@@ -219,7 +219,7 @@ function getPersonCrewRoles(id, callback){
 
 function getPersonAwards(id, callback){
 	return new Promise((resolve, reject) => {
-		con.query("SELECT AwardName, YearAwarded FROM Award WHERE PersonId = " + id + " ORDER BY YearAwarded;",
+		con.query("SELECT AwardName, YearAwarded, Academy FROM Award WHERE PersonId = " + id + " ORDER BY YearAwarded;",
 		function (err, result, fields) {
 			if (err) { reject(err); }
 			else { resolve(callback(result)); }
@@ -237,7 +237,9 @@ function getTitle(name, year, callback) {
 
 function getTitleCast(name, year, callback){
 	return new Promise((resolve, reject) => {
-		con.query("SELECT * FROM CastMembers WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";",
+		con.query("SELECT P.PersonName, C.Role, C.CharacterName "
+		+ "FROM CastMembers C, Person P "
+		+ "WHERE C.PersonID = P.ID AND C.showTitle = \'" + name + "\' AND C.ShowYear = " + year + ";",
 		function (err, result, fields) {
 			if (err) { reject(err); }
 			else { resolve(callback(result)); }
@@ -247,7 +249,9 @@ function getTitleCast(name, year, callback){
 
 function getTitleCrew(name, year, callback){
 	return new Promise((resolve, reject) => {
-		con.query("SELECT * FROM CrewMembers WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";",
+		con.query("SELECT P.PersonName, C.Role "
+		+ "FROM CrewMembers C, Person P "
+		+ "WHERE C.PersonID = P.ID AND C.showTitle = \'" + name + "\' AND C.ShowYear = " + year + ";",
 		function (err, result, fields) {
 			if (err) { reject(err); }
 			else { resolve(callback(result)); }
@@ -329,8 +333,8 @@ function buildPersonEntry(type, entry) {
 			html += '<h1>Entry does not exist!<h1>';
 		} else if (type == 'Person' && entry != undefined) {
 			console.log('Building entry page...');
-			
-			var cast, crew, awards;	
+
+			var cast, crew, awards;
 			getPersonCastRoles(entry[0].Id, function(result) {
 				cast = result;
 				html += '<h1>' + entry[0].PersonName + '</h1>'
@@ -345,13 +349,12 @@ function buildPersonEntry(type, entry) {
 				if (cast != undefined) {
 					console.log(cast);
 					if (cast != '' && cast.length != 0) {
-						html += '<table style=\"width:75%\" align=\"center\"><th>Character Name</th><th>Role</th><th>Show Title</th><th>Year</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Character Name</th><th>Role</th><th>Show Title</th>';
 						var i;
 						for (i = 0; i < cast.length; i++) {
 							html += '<tr><td>' + cast[i].CharacterName + '</td>'
 									+ '<td>' + cast[i].Role + '</td>'
-									+ '<td>' + cast[i].showTitle + '</td>'
-									+ '<td>' + cast[i].ShowYear + '</td></tr>';
+									+ '<td>' + cast[i].showTitle + ' (' + cast[i].ShowYear + ')</td></tr>';
 						}
 						html += '</table>';
 					}
@@ -362,12 +365,11 @@ function buildPersonEntry(type, entry) {
 				if (crew != undefined) {
 					console.log(crew);
 					if (crew != '' && crew.length != 0) {
-						html += '<table style=\"width:75%\" align=\"center\"><th>Role</th><th>Show Title</th><th>Year</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Role</th><th>Show Title</th>';
 						var i;
 						for (i = 0; i < crew.length; i++) {
 							html += '<tr><td>' + crew[i].Role + '</td>'
-									+ '<td>' + crew[i].showTitle + '</td>'
-									+ '<td>' + crew[i].Year + '</td></tr>';
+									+ '<td>' + crew[i].showTitle + ' (' + crew[i].ShowYear + ')</td></tr>';
 						}
 						html += '</table>';
 					}
@@ -379,16 +381,17 @@ function buildPersonEntry(type, entry) {
 				if (awards != undefined) {
 					console.log(awards);
 					if (awards != '' && awards.length != 0) {
-						html += '<table style=\"width:75%\" align=\"center\"><th>Award Name</th><th>Year Awarded</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Award Name</th><th>Year Awarded</th><th>Academy</th>';
 						var i;
 						for (i = 0; i < awards.length; i++) {
 							html += '<tr><td>' + awards[i].AwardName + '</td>'
-									+ '<td>' + awards[i].YearAwarded + '</td></tr>';
+									+ '<td>' + awards[i].YearAwarded + '</td>'
+									+ '<td>' + awards[i].Academy +'</tr>';
 						}
 						html += '</table>';
 					}
 				}
-				
+
 				/* Complete HTML code by closing tags. */
 				html += '</div></body></html>';
 				/* Write completed HTML code to CSE305Response.html */
@@ -420,16 +423,12 @@ function buildShowEntry(type, entry) {
 			html += '<h1>Entry does not exist!<h1>';
 		} else if (type == 'Show' && entry != '') {
 			console.log('Building entry page...');
-			
+
 			var cast, crew, awards;
 			getTitleCast(entry[0].showTitle, entry[0].ShowYear, function(result) {
-				html += '<h1>' + entry[0].showTitle + '</h1>'
-					+ '<h2>' + entry[0].StudioName + '</h2>'
-					+ '<h2>' + entry[0].ShowYear + '</h2>'
-					+ '<p>' + entry[0].Genre + '<br>'
-					+ entry[0].Reviews + '/10<br>'
-					+ entry[0].Runtime + ' minutes<br>'
-					+ entry[0].Rating + '<br></p>'
+				html += '<h1>' + entry[0].showTitle + ' (' + entry[0].ShowYear + ')</h1>'
+				+ '<p>' + entry[0].Rating + ' | ' + parseInt(entry[0].Runtime / 60) + 'h ' + entry[0].Runtime % 60 + 'min | ' + entry[0].Genre + ' | ' + entry[0].Reviews + '/10 </br>'
+					+ 'Produced by ' + entry[0].StudioName + '</p>'
 					+ '<h2>Synopsis</h2>'
 					+ '<p>' + entry[0].Synopsis + '</p>';
 				html += '<h2>Cast & Crew</h2>';
@@ -442,7 +441,7 @@ function buildShowEntry(type, entry) {
 						var i;
 						for (i = 0; i < cast.length; i++) {
 							html += '<tr><td>' + cast[i].CharacterName + '</td>'
-									+ '<td>' /*+ cast[i].PersonName*/ + '</td>'
+									+ '<td>' + cast[i].PersonName + '</td>'
 									+ '<td>' + cast[i].Role + '</td></tr>';
 						}
 						html += '</table>';
@@ -458,13 +457,13 @@ function buildShowEntry(type, entry) {
 						var i;
 						for (i = 0; i < crew.length; i++) {
 							html += '<tr><td>' + crew[i].Role + '</td>'
-									/*+ '<td>' + crew[i].PersonName + '</td>*/
+									+ '<td>' + crew[i].PersonName + '</td>'
 									+ '</tr>';
 						}
 						html += '</table>';
 					}
 				}
-				
+
 				/* Complete HTML code by closing tags. */
 				html += '</div></body></html>';
 				/* Write completed HTML code to CSE305Response.html */
