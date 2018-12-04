@@ -308,10 +308,10 @@ function buildPersonEntry(type, entry) {
 	/* Return a Promise to have response wait for write to complete */
 	return new Promise((resolve, reject) => {
 		/* Truncate server's copy of CSE305Entry.html */
-		fs.truncate(entryFile, 0, function() {
+		fs.truncate(entryFile, 0,
+		function() {
 			console.log("Response file cleared!");
-			}
-		);
+		});
 
 		var html = '<!DOCTYPE html><html>'
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
@@ -320,20 +320,23 @@ function buildPersonEntry(type, entry) {
 					+ '<div class = \"center\"><a href=\"/\">Back to query page</a>';
 		if (type == 'Null') {
 			html += '<h1>Entry does not exist!<h1>';
-		} else if (type == 'Person' && entry != '') {
+		} else if (type == 'Person' && entry != undefined) {
 			console.log('Building entry page...');
-			if (type == 'Person') {
-				html += '<h1>' + entry[0].PersonName + '</h1>'
-						+ '<p>DOB:' + entry[0].DOB
-						+ '<br>Hometown: ' + entry[0].Hometown
-						+ '<br>Height: ' + entry[0].Height
-						+ '<br>Gender: ' + entry[0].Gender
-						+ '</p>';
-				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
-				/* Query database for list of roles that this Person has had */
-				html += '<h3>Credits</h3>';
-				getPersonCastRoles(entry[0].Id, function(cast) {
-					if (cast != undefined && cast != '' && cast.length != 0) {
+
+			html += '<h1>' + entry[0].PersonName + '</h1>'
+					+ '<p>DOB:' + entry[0].DOB
+					+ '<br>Hometown: ' + entry[0].Hometown
+					+ '<br>Height: ' + entry[0].Height
+					+ '<br>Gender: ' + entry[0].Gender
+					+ '</p>';
+			html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
+
+			/* Query database for list of roles that this Person has had */
+			html += '<h3>Credits</h3>';
+			getPersonCastRoles(entry[0].Id, function(cast) {
+				if (cast != undefined) {
+					console.log(cast);
+					if (cast != '' && cast.length != 0) {
 						html += '<table align=\"center\"><th>Character Name</th><th>Role</th><th>Show Title</th><th>Year</th>';
 						var i;
 						for (i = 0; i < cast.length; i++) {
@@ -344,9 +347,13 @@ function buildPersonEntry(type, entry) {
 						}
 						html += '</table>';
 					}
-				});
-				getPersonCrewRoles(entry[0].Id, function(crew) {
-					if (crew != undefined && crew != '' && crew.length != 0) {
+				}
+			});
+
+			getPersonCrewRoles(entry[0].Id, function(crew) {
+				if (crew != undefined) {
+					console.log(crew);
+					if (crew != '' && crew.length != 0) {
 						html += '<table align=\"center\"><th>Role</th><th>Show Title</th><th>Year</th>';
 						var i;
 						for (i = 0; i < crew.length; i++) {
@@ -356,27 +363,31 @@ function buildPersonEntry(type, entry) {
 						}
 						html += '</table>';
 					}
-				});
-				/* Query database for all awards */
-				html += '<h3>Awards</h3>';
-				getPersonAwards(entry[0].Id, function(awards) {
-					if (awards != undefined && awards != '' && awards.length != 0) {
+				}
+			});
+			
+			html += '<h3>Awards</h3>';
+			getPersonAwards(entry[0].Id, function(awards) {
+				if (awards != undefined) {
+					console.log(awards);
+					if (awards != '' && awards.length != 0) {
 						html += '<table align=\"center\"><th>Academy</th><th>Award Name</th><th>Year Awarded</th>';
 						var i;
 						for (i = 0; i < awards.length; i++) {
 							html += '<tr><td>' + awards[i].Academy + '</td>'
-									+ '<td>' + crew[i].AwardName + '</td>'
-									+ '<td>' + crew[i].YearAwarded + '</td></tr>';
+									+ '<td>' + awards[i].AwardName + '</td>'
+									+ '<td>' + awards[i].YearAwarded + '</td></tr>';
 						}
 						html += '</table>';
 					}
-				});
-			} else {
-				console.log('Invalid entry request!');
-				reject('Invalid entry request!');
-			}
-			/* Complete HTML code by closing tags. */
+				}
+			});
+		} else if (Type == 'Show' && entry != undefined) {
+		} else {
+			console.log('Invalid entry request!');
+			reject('Invalid entry request!');
 		}
+		/* Complete HTML code by closing tags. */
 		html += '</div></body></html>';
 		/* Write completed HTML code to CSE305Response.html */
 		fs.writeFile(entryFile, html, function (err) {
