@@ -51,9 +51,7 @@ app.post('/CSE305Response.html', (req, res) => {
 			if (person == undefined || person.length == 0) {
 				console.log("No results found!");
 				/* If no Person was found, call buildPage() with "Null" type */
-				page = buildResponsePage("Null", person);
-				/* Send CSE305Response.html only when buildResponsePage() returns */
-				page.then(
+				buildResponsePage("Null", person).then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
 					res.sendFile(dir + '\\CSE305Response.html');
@@ -61,10 +59,8 @@ app.post('/CSE305Response.html', (req, res) => {
 				function(err) { console.log(err); });
 			} else {
 				console.log(person);
-				/* Call buildResponsePage() to set up HTML response */
-				page = buildResponsePage(postBody.type, person);
-				/* Send CSE305Response.html only when buildResponsePage() returns */
-				page.then(
+				/* Call buildResponsePage() to set up HTML response, and send only when method returns */
+				buildResponsePage(postBody.type, person).then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
 					res.sendFile(dir + '\\CSE305Response.html');
@@ -79,9 +75,7 @@ app.post('/CSE305Response.html', (req, res) => {
 			if (title == undefined || title.length == 0) {
 				console.log("No results found!");
 				/* If no Shows were found, call buildResponsePage() with "Null" type */
-				page = buildResponsePage("Null", title);
-				/* Send CSE305Response only when buildResponsePage() returns */
-				page.then(
+				page = buildResponsePage("Null", title).then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
 					res.sendFile(dir + '\\CSE305Response.html');
@@ -90,9 +84,7 @@ app.post('/CSE305Response.html', (req, res) => {
 			} else {
 				console.log(title);
 				/* Call buildResponsePage() to set up HTML response */
-				page = buildResponsePage(postBody.type, title);
-				/* Send CSE305Response.html only when buildResponsePage() returns */
-				page.then(
+				buildResponsePage(postBody.type, title).then(
 				function(result) {
 					if (result) { console.log('Finished writing response!'); }
 					res.sendFile(dir + '\\CSE305Response.html');
@@ -349,11 +341,11 @@ function buildPersonEntry(type, entry) {
 					+ '</p>';
 				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
 				/* Query database for list of roles that this Person has had */
-				html += '<h3>Credits</h3>';
+				html += '<h2>Credits</h2>';
 				if (cast != undefined) {
 					console.log(cast);
 					if (cast != '' && cast.length != 0) {
-						html += '<table align=\"center\"><th>Character Name</th><th>Role</th><th>Show Title</th><th>Year</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Character Name</th><th>Role</th><th>Show Title</th><th>Year</th>';
 						var i;
 						for (i = 0; i < cast.length; i++) {
 							html += '<tr><td>' + cast[i].CharacterName + '</td>'
@@ -370,7 +362,7 @@ function buildPersonEntry(type, entry) {
 				if (crew != undefined) {
 					console.log(crew);
 					if (crew != '' && crew.length != 0) {
-						html += '<table align=\"center\"><th>Role</th><th>Show Title</th><th>Year</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Role</th><th>Show Title</th><th>Year</th>';
 						var i;
 						for (i = 0; i < crew.length; i++) {
 							html += '<tr><td>' + crew[i].Role + '</td>'
@@ -383,15 +375,14 @@ function buildPersonEntry(type, entry) {
 			}).then(
 			getPersonAwards(entry[0].Id, function(result) {
 				awards = result;
-				html += '<h3>Awards</h3>';
+				html += '<h2>Awards</h2>';
 				if (awards != undefined) {
 					console.log(awards);
 					if (awards != '' && awards.length != 0) {
-						html += '<table align=\"center\"><th>Academy</th><th>Award Name</th><th>Year Awarded</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Award Name</th><th>Year Awarded</th>';
 						var i;
 						for (i = 0; i < awards.length; i++) {
-							html += '<tr><td>' + awards[i].Academy + '</td>'
-									+ '<td>' + awards[i].AwardName + '</td>'
+							html += '<tr><td>' + awards[i].AwardName + '</td>'
 									+ '<td>' + awards[i].YearAwarded + '</td></tr>';
 						}
 						html += '</table>';
@@ -433,21 +424,21 @@ function buildShowEntry(type, entry) {
 			var cast, crew, awards;
 			getTitleCast(entry[0].showTitle, entry[0].ShowYear, function(result) {
 				html += '<h1>' + entry[0].showTitle + '</h1>'
-					+ '<h3>' + entry[0].StudioName + '</h3>'
-					+ '<h3>' + entry[0].ShowYear + '</h3>'
+					+ '<h2>' + entry[0].StudioName + '</h2>'
+					+ '<h2>' + entry[0].ShowYear + '</h2>'
 					+ '<p>' + entry[0].Genre + '<br>'
 					+ entry[0].Reviews + '/10<br>'
 					+ entry[0].Runtime + ' minutes<br>'
 					+ entry[0].Rating + '<br></p>'
-					+ '<h3>Synopsis</h3>'
+					+ '<h2>Synopsis</h2>'
 					+ '<p>' + entry[0].Synopsis + '</p>';
-				html += '<h3>Cast & Crew</h3>';
+				html += '<h2>Cast & Crew</h2>';
 
 				cast = result;
 				if (cast != undefined) {
 					console.log(cast);
 					if (cast != '' && cast.length != 0) {
-						html += '<table align=\"center\"><th>Character</th><th>Actor/Actress</th><th>Role</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Character</th><th>Actor/Actress</th><th>Role</th>';
 						var i;
 						for (i = 0; i < cast.length; i++) {
 							html += '<tr><td>' + cast[i].CharacterName + '</td>'
@@ -463,7 +454,7 @@ function buildShowEntry(type, entry) {
 				if (crew != undefined) {
 					console.log(crew);
 					if (crew != '' && crew.length != 0) {
-						html += '<table align=\"center\"><th>Role</th><th>Person</th>';
+						html += '<table style=\"width:75%\" align=\"center\"><th>Role</th><th>Person</th>';
 						var i;
 						for (i = 0; i < crew.length; i++) {
 							html += '<tr><td>' + crew[i].Role + '</td>'
