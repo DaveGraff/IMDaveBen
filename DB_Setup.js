@@ -39,14 +39,14 @@ con.query("INSERT INTO Studio VALUES ('Walt Disney', 'USA')");
 
 //People
 con.query("INSERT INTO Person VALUES (0, 'Tom Cruise', '7/3/1968', 'Syracuse, NY', NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person VALUES (1, 'Robert Downey Jr.', '7/9/1963', 'Owensboro, Kentucky', NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (1, 'Robert Downey Jr.', NULL, NULL, NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (2, 'Scarlett Johansson', NULL, NULL, NULL, 'Female', 'A cool lady')");
 con.query("INSERT INTO Person VALUES (3, 'Tom Hanks', NULL, NULL, NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (4, 'Brad Pitt', NULL, NULL, NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (5, 'George Clooney', NULL, NULL, NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (6, 'Will Smith', NULL, NULL, NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (7, 'Matt Damon', NULL, NULL, NULL, 'Male', 'A cool dude')");
-con.query("INSERT INTO Person VALUES (8, 'Johnny Depp', NULL, NULL, NULL, 'Male', 'A cool dude')");
+con.query("INSERT INTO Person VALUES (8, 'Johnny Depp', '7/9/1963', 'Owensboro, Kentucky', NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (9, 'Dwayne Johnson', NULL, NULL, NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (10, 'Harrison Ford', NULL, NULL, NULL, 'Male', 'A cool dude')");
 con.query("INSERT INTO Person VALUES (11, 'Jim Carrey', NULL, NULL, NULL, 'Male', 'A cool dude')");
@@ -65,6 +65,7 @@ con.query("INSERT INTO Shows VALUES ('The Lone Ranger', 2013, 'Action, Adventure
 con.query("INSERT INTO Shows VALUES ('A Nightmare on Elm Street', 1984, 'Horror', 5.5, 91, 'R', 'The monstrous spirit of a slain janitor seeks revenge by invading the dreams of teenagers whose parents were responsible for his untimely death.', 'New Line Cinema', 'USA', false)");
 con.query("INSERT INTO Shows VALUES ('Alice in Wonderland', 2010, 'Adventure, Family, Fantasy', 6.5, 108, 'PG', 'Nineteen-year-old Alice returns to the magical world from her childhood adventure, where she reunites with her old friends and learns of her true destiny: to end the Red Queens reign of terror.', 'Walt Disney', 'USA', false)");
 con.query("INSERT INTO Shows VALUES ('Untitled Keith Richards Documentary', 2016, 'Documentary', 5.6, NULL, NULL, 'A glimpse into the life of The Rolling Stones guitarist Keith Richards, whose musical career spans across five decades.', NULL, NULL, false)");
+
 //Cast
 con.query("INSERT INTO CastMembers VALUES (8, 'Captain Jack Sparrow', 'Lead Actor', 'Pirates of the Caribbean: The Curse of the Black Pearl', 2003)");
 con.query("INSERT INTO CastMembers VALUES (8, 'Tonto', 'Lead Actor', 'The Lone Ranger', 2013)");
