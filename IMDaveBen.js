@@ -322,8 +322,9 @@ function buildPersonEntry(type, entry) {
 						+ '<br>Gender: ' + entry[0].Gender
 						+ '</p>';
 				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
-				html += '<h3>Cast Roles</h3>';
-				html += '<h3>Crew Roles</h3>';
+				/* Query database for list of roles that this Person has had */
+				html += '<h3>Credits</h3>';
+				/* Query database for all awards */
 				html += '<h3>Awards</h3>';
 			} else {
 				console.log('Invalid entry request!');
