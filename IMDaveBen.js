@@ -383,6 +383,47 @@ function buildPersonEntry(type, entry) {
 				}
 			});
 		} else if (Type == 'Show' && entry != undefined) {
+			html += '<h1>' + entry[0].showTitle + '</h1>'
+					+ '<h3>' + entry[0].StudioName + '</h3>'
+					+ '<h3>' + entry[0].ShowYear + '</h3>'
+					+ '<p>' + entry[0].Genre
+					+ '<br>' + entry[0].Reviews
+					+ '<br>' + entry[0].Runtime
+					+ '<br>' + entry[0].Rating + '</p>';
+			html += '<h3>Synopsis</h3><p>' + entry[0].Synopsis + '</p>';
+			
+			html += '<h3>Cast & Crew</h3>';
+			getTitleCast(entry[0].showTitle, entry[0].ShowYear, function(cast) {
+				if (cast != undefined) {
+					console.log(cast);
+					if (cast != '' && cast.length != 0) {
+						html += '<table align=\"center\"><th>Character</th><th>Actor/Actress</th><th>Role</th>';
+						var i;
+						for (i = 0; i < cast.length; i++) {
+							html += '<tr><td>' + cast[i].CharacterName + '</td>'
+									/*+ '<td>' + cast[i].PersonName + '</td>'*/
+									+ '<td>' + cast[i].Role + '</td></tr>';
+						}
+						html += '</table>';
+					}
+				}
+			});
+			
+			getTitleCrew(entry[0].showTitle, entry[0].ShowYear, function(crew) {
+				if (crew != undefined) {
+					console.log(crew);
+					if (crew != '' && crew.length != 0) {
+						html += '<table align=\"center\"><th>Role</th><th>Person</th>';
+						var i;
+						for (i = 0; i < crew.length; i++) {
+							html += '<tr><td>' + crew[i].Role + '</td>'
+									/*+ '<td>' + crew[i].PersonName + '</td>*/
+									+ '</tr>';
+						}
+						html += '</table>';
+					}
+				}
+			});
 		} else {
 			console.log('Invalid entry request!');
 			reject('Invalid entry request!');
