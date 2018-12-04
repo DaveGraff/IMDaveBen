@@ -6,6 +6,7 @@ var con = mysql.createConnection({
   user: "root",
   password: "#SeaShanty"
 });
+
 con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
@@ -72,4 +73,4 @@ con.query("INSERT INTO CastMembers VALUES (8, 'Glen Lantz', 'Lead Actor', 'A Nig
 con.query("INSERT INTO CastMembers VALUES (8, 'The Mad Hatter', 'Lead Actor', 'Alice in Wonderland', 2010)");
 
 //Crew
-con.query("INSERT INTO CrewMembers VALUES (8, 'Director', 'Untitled Keith Richards Documentary', 2016)")
+con.query("INSERT INTO CrewMembers VALUES (8, 'Director', 'Untitled Keith Richards Documentary', 2016)");

@@ -103,6 +103,7 @@ app.post('/CSE305Response.html', (req, res) => {
 	}
 });
 
+/* Handle requests for specific entries in Person, Show, etc. */
 app.post('/CSE305Entry.html', (req, res) => {
 	/* Retrieve request body */
 	const postBody = req.body;
@@ -131,29 +132,34 @@ app.post('/CSE305Entry.html', (req, res) => {
 			}
 		});
 	} else if (postBody.Type == 'Show') {
-		/*
-		getShow(postBody.Key, function(person) {
+		var ind = postBody.Key.indexOf(',');
+		var title = postBody.Key.substring(0, ind);
+		var year = postBody.Key.substring(ind + 1);
+		getTitle(title, year, function(show) {
 			if (show == '' || show.length == 0) {
 				console.log('Show not found!');
 				page = buildShowEntry('Null', show);
 				page.then(
 				function(result) {
-					if (result) { console.log('Finished building entry page!'); }
-					res.sendFile(entryFile);
+					if (result) {
+						console.log('Finished building entry page!');
+						res.sendFile(entryFile);
+					} else { console.log('Could not build entry page!'); }
 				},
 				function(err) { console.log(err); });
 			} else {
 				console.log(show);
-				page = buildShowEntry(postBody.Type, person);
+				page = buildShowEntry(postBody.Type, show);
 				page.then(
 				function(result) {
-					if (result) { console.log('Finished building entry page!'); }
-					res.sendFile(entryFile);
+					if (result) {
+						console.log('Finished building entry page!');
+						res.sendFile(entryFile);
+					} else { console.log('Could not build entry page!'); }
 				},
 				function(err) { console.log(err); });
 			}
 		});
-		*/
 	}
 });
 
@@ -222,7 +228,7 @@ function getPersonAwards(id, callback){
 
 /* Return a specific Title given its primary key (ShowName, ShowYear) */
 function getTitle(name, year, callback){
-	con.query("SELECT * FROM Shows WHERE ShowTitle = " + name + "AND ShowYear = " + year + ";", function (err, result, fields) {
+	con.query("SELECT * FROM Shows WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";", function (err, result, fields) {
 	if (err) throw err;
 		return callback(result);
 	});
@@ -274,7 +280,7 @@ function buildResponsePage(type, list) {
 				for (i = 0; i < list.length; i++) {
 					body += '<tr><td>' + list[i].ShowTitle + '</td><td>'
 					+ '<input type=\"hidden\" name=\"Type\" value=\"Show\">'
-					+ '<button type=\"submit\" name=\"Key\" value=\"' + list[i].ShowTitle + ', ' + list[i].ShowYear
+					+ '<button type=\"submit\" name=\"Key\" value=\"' + list[i].ShowTitle + ',' + list[i].ShowYear
 					+ '\" class=\"link-button\">' + list[i].ShowYear + '</button></td></tr>';
 				}
 			}
@@ -285,8 +291,10 @@ function buildResponsePage(type, list) {
 			body += "<h1>No results found!</h1>";
 		}
 		/* Create HTML code from string constant */
-		const html = ('<!DOCTYPE html><html><head><link rel=\"stylesheet\" href=\"style.css\"></head><body><img src=\"logo.png\" alt=\"IMDaveBen\" class = \"centerImage\">'
-					+ '<div class=\"center\"><a href=\"/\">Back to query page</a>' + body + '</div></body></html>');
+		const html = ('<!DOCTYPE html><html><head><link rel=\"stylesheet\" href=\"style.css\"></head>'
+					+ '<body><img src=\"logo.png\" alt=\"IMDaveBen\" class = \"centerImage\">'
+					+ '<div class=\"center\"><a href=\"/\">Back to query page</a>'
+					+ body + '</div></body></html>');
 		/* Write completed HTML code to CSE305Response.html */
 		fs.writeFile(responseFile, html, function (err) {
 			if (err) { reject(err);	}
@@ -308,20 +316,26 @@ function buildPersonEntry(type, entry) {
 		var html = '<!DOCTYPE html><html>'
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
 					+ '<title>IMDaveBen</title></head>'
-					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\"><div class = \"center\">';
+					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\">'
+					+ '<div class = \"center\"><a href=\"/\">Back to query page</a>';
 		if (type == 'Null') {
 			html += '<h1>Entry does not exist!<h1>';
 		} else if (type == 'Person' && entry != '') {
 			console.log('Building entry page...');
 			if (type == 'Person') {
 				html += '<h1>' + entry[0].PersonName + '</h1>'
+						+ '<p>DOB:' + entry[0].DOB
+						+ '<br>Hometown:' + entry[0].Hometown
+						+ '<br>Height:' + entry[0].Height
+						+ '<br>Gender:' + entry[0].Gender
+						+ '</p>';
+				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
 						+ '<p>DOB: ' + entry[0].DOB
 						+ '<br>Hometown: ' + entry[0].Hometown
 						+ '<br>Height: ' + entry[0].Height
 						+ '<br>Gender: ' + entry[0].Gender
 						+ '</p>';
 				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
-
 				html += '<h3>Cast Roles</h3>';
 				html += '<h3>Crew Roles</h3>';
 				html += '<h3>Awards</h3>';
@@ -349,11 +363,21 @@ function buildShowEntry(type, entry) {
 		var html = '<!DOCTYPE html><html>'
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
 					+ '<title>IMDaveBen</title></head>'
-					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\"><div class = \"center\">';
+					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\">'
+					+ '<div class = \"center\"><a href=\"/\">Back to query page</a>';
 		if (type == 'Null') {
 			html += '<h1>Entry does not exist!<h1>';
-		} else if (type == 'Show' && list != '') {
+		} else if (type == 'Show' && entry != '') {
 			console.log('Building entry page...');
+			html += '<h1>' + entry[0].showTitle + '</h1>'
+					+ '<h3>' + entry[0].StudioName + '</h3>'
+					+ '<h3>' + entry[0].ShowYear + '</h3>'
+					+ '<p>' + entry[0].Genre + '<br>'
+					+ entry[0].Reviews + '<br>'
+					+ entry[0].Runtime + '<br>'
+					+ entry[0].Rating + '<br></p>'
+					+ '<h3>Synopsis</h3>'
+					+ '<p>' + entry[0].Synopsis + '</p>';
 		} else {
 			console.log('Invalid entry request!');
 			reject('Invalid entry request!');
