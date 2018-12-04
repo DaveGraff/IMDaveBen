@@ -206,28 +206,37 @@ function getPerson(id, callback){
 }
 
 function getPersonCastRoles(id, callback){
-	con.query("SELECT * FROM CastMembers WHERE PersonId = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
-	if (err) throw err;
-		return callback(result);
+	return new Promise((resolve, reject) => {
+		con.query("SELECT * FROM CastMembers WHERE PersonId = " + id + " ORDER BY ShowYear, ShowTitle;",
+		function (err, result, fields) {
+			if (err) { reject(err); }
+			else { resolve(callback(result)); }
+		});
 	});
 }
 
 function getPersonCrewRoles(id, callback){
-	con.query("SELECT * FROM CrewMembers WHERE PersonId = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
-	if (err) throw err;
-		return callback(result);
+	return new Promise((resolve, reject) => {
+		con.query("SELECT * FROM CrewMembers WHERE PersonId = " + id + " ORDER BY ShowYear, ShowTitle;",
+		function (err, result, fields) {
+			if (err) { reject(err); }
+			else { resolve(callback(result)); }
+		});
 	});
 }
 
 function getPersonAwards(id, callback){
-	con.query("SELECT AwardName, YearAwarded FROM Award WHERE PersonId = " + id + " ORDER BY YearAwarded;", function (err, result, fields) {
-	if (err) throw err;
-		return callback(result);
+	return new Promise((resolve, reject) => {
+		con.query("SELECT AwardName, YearAwarded FROM Award WHERE PersonId = " + id + " ORDER BY YearAwarded;",
+		function (err, result, fields) {
+			if (err) { reject(err); }
+			else { resolve(callback(result)); }
+		});
 	});
 }
 
 /* Return a specific Title given its primary key (ShowName, ShowYear) */
-function getTitle(name, year, callback){
+function getTitle(name, year, callback) {
 	con.query("SELECT * FROM Shows WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";", function (err, result, fields) {
 	if (err) throw err;
 		return callback(result);
@@ -235,16 +244,22 @@ function getTitle(name, year, callback){
 }
 
 function getTitleCast(name, year, callback){
-	con.query("SELECT * FROM CastMembers WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";", function (err, result, fields) {
-	if (err) throw err;
-		return callback(result);
+	return new Promise((resolve, reject) => {
+		con.query("SELECT * FROM CastMembers WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";",
+		function (err, result, fields) {
+			if (err) { reject(err); }
+			else { resolve(callback(result)); }
+		});
 	});
 }
 
 function getTitleCrew(name, year, callback){
-	con.query("SELECT * FROM CrewMembers WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";", function (err, result, fields) {
-	if (err) throw err;
-		return callback(result);
+	return new Promise((resolve, reject) => {
+		con.query("SELECT * FROM CrewMembers WHERE ShowTitle = \'" + name + "\' AND ShowYear = " + year + ";",
+		function (err, result, fields) {
+			if (err) { reject(err); }
+			else { resolve(callback(result)); }
+		});
 	});
 }
 
@@ -322,18 +337,19 @@ function buildPersonEntry(type, entry) {
 			html += '<h1>Entry does not exist!<h1>';
 		} else if (type == 'Person' && entry != undefined) {
 			console.log('Building entry page...');
-
-			html += '<h1>' + entry[0].PersonName + '</h1>'
+			
+			var cast, crew, awards;	
+			getPersonCastRoles(entry[0].Id, function(result) {
+				cast = result;
+				html += '<h1>' + entry[0].PersonName + '</h1>'
 					+ '<p>DOB:' + entry[0].DOB
 					+ '<br>Hometown: ' + entry[0].Hometown
 					+ '<br>Height: ' + entry[0].Height
 					+ '<br>Gender: ' + entry[0].Gender
 					+ '</p>';
-			html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
-
-			/* Query database for list of roles that this Person has had */
-			html += '<h3>Credits</h3>';
-			getPersonCastRoles(entry[0].Id, function(cast) {
+				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
+				/* Query database for list of roles that this Person has had */
+				html += '<h3>Credits</h3>';
 				if (cast != undefined) {
 					console.log(cast);
 					if (cast != '' && cast.length != 0) {
@@ -348,9 +364,9 @@ function buildPersonEntry(type, entry) {
 						html += '</table>';
 					}
 				}
-			});
-
-			getPersonCrewRoles(entry[0].Id, function(crew) {
+			}).then(
+			getPersonCrewRoles(entry[0].Id, function(result) {
+				crew = result;
 				if (crew != undefined) {
 					console.log(crew);
 					if (crew != '' && crew.length != 0) {
@@ -364,10 +380,10 @@ function buildPersonEntry(type, entry) {
 						html += '</table>';
 					}
 				}
-			});
-			
-			html += '<h3>Awards</h3>';
-			getPersonAwards(entry[0].Id, function(awards) {
+			}).then(			
+			getPersonAwards(entry[0].Id, function(result) {
+				awards = result;
+				html += '<h3>Awards</h3>';
 				if (awards != undefined) {
 					console.log(awards);
 					if (awards != '' && awards.length != 0) {
@@ -381,21 +397,23 @@ function buildPersonEntry(type, entry) {
 						html += '</table>';
 					}
 				}
-			});
+				
+				/* Complete HTML code by closing tags. */
+				html += '</div></body></html>';
+				/* Write completed HTML code to CSE305Response.html */
+				fs.writeFile(entryFile, html, function (err) {
+					if (err) { reject(err);	}
+					resolve(true);
+				});
+			})));
 		} else {
 			console.log('Invalid entry request!');
 			reject('Invalid entry request!');
 		}
-		/* Complete HTML code by closing tags. */
-		html += '</div></body></html>';
-		/* Write completed HTML code to CSE305Response.html */
-		fs.writeFile(entryFile, html, function (err) {
-			if (err) { reject(err);	}
-			resolve(true);
-		});
 	});
 }
 
+/* Build CSE305Entry.html by writing with file I/O. */
 function buildShowEntry(type, entry) {
 	/* Return a Promise to have response wait for write to complete */
 	return new Promise((resolve, reject) => {
@@ -411,7 +429,10 @@ function buildShowEntry(type, entry) {
 			html += '<h1>Entry does not exist!<h1>';
 		} else if (type == 'Show' && entry != '') {
 			console.log('Building entry page...');
-			html += '<h1>' + entry[0].showTitle + '</h1>'
+			
+			var cast, crew, awards;
+			getTitleCast(entry[0].showTitle, entry[0].ShowYear, function(result) {
+				html += '<h1>' + entry[0].showTitle + '</h1>'
 					+ '<h3>' + entry[0].StudioName + '</h3>'
 					+ '<h3>' + entry[0].ShowYear + '</h3>'
 					+ '<p>' + entry[0].Genre + '<br>'
@@ -420,9 +441,9 @@ function buildShowEntry(type, entry) {
 					+ entry[0].Rating + '<br></p>'
 					+ '<h3>Synopsis</h3>'
 					+ '<p>' + entry[0].Synopsis + '</p>';
-			
-			html += '<h3>Cast & Crew</h3>';
-			getTitleCast(entry[0].showTitle, entry[0].ShowYear, function(cast) {
+				html += '<h3>Cast & Crew</h3>';
+
+				cast = result;
 				if (cast != undefined) {
 					console.log(cast);
 					if (cast != '' && cast.length != 0) {
@@ -436,9 +457,9 @@ function buildShowEntry(type, entry) {
 						html += '</table>';
 					}
 				}
-			});
-			
-			getTitleCrew(entry[0].showTitle, entry[0].ShowYear, function(crew) {
+			}).then(
+			getTitleCrew(entry[0].showTitle, entry[0].ShowYear, function(result) {
+				crew = result;
 				if (crew != undefined) {
 					console.log(crew);
 					if (crew != '' && crew.length != 0) {
@@ -452,7 +473,7 @@ function buildShowEntry(type, entry) {
 						html += '</table>';
 					}
 				}
-			});
+			}));
 		} else {
 			console.log('Invalid entry request!');
 			reject('Invalid entry request!');
