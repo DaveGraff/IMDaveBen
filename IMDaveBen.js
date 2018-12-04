@@ -228,6 +228,20 @@ function getTitle(name, year, callback){
 	});
 }
 
+function getTitleCast(name, year, callback){
+	con.query("SELECT * FROM CastMembers WHERE ShowTitle = " + name + "AND ShowYear = " + year + ";", function (err, result, fields) {
+	if (err) throw err;
+		return callback(result);
+	});
+}
+
+function getTitleCrew(name, year, callback){
+	con.query("SELECT * FROM CrewMembers WHERE ShowTitle = " + name + "AND ShowYear = " + year + ";", function (err, result, fields) {
+	if (err) throw err;
+		return callback(result);
+	});
+}
+
 /* Build CSE305Response.html by writing with file I/O. */
 function buildResponsePage(type, list) {
 	/* Return a Promise to have response wait for write to complete */
