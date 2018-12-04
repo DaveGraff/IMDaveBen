@@ -275,32 +275,32 @@ function buildResponsePage(type, list) {
 			console.log('Appending results...');
 			/* If results list is not empty, add <table> to HTML body */
 			if (type == 'People') {
-				body += '<form id=\"personEntry\" method=\"post\" action=\"/CSE305Entry.html\"><table align=\"center\">';
 				/* Set up headers for Person attributes */
-				body += '<th>Name</th><th>ID #</th>';
+				body += '<table align=\"center\"><th>Name</th><th>ID #</th>';
 				/* Create a new row in the table for each search result */
 				var i;
 				for (i = 0; i < list.length; i++) {
 					body += '<tr><td>' + list[i].PersonName + '</td><td>'
+					+ '<form id=\"personEntry\" method=\"post\" action=\"/CSE305Entry.html\">'
 					+ '<input type=\"hidden\" name=\"Type\" value=\"Person\">'
 					+ '<button type=\"submit\" name=\"ID\" value=\"' + list[i].Id
-					+ '\" class=\"link-button\">' + list[i].Id + '</button></td></tr>';
+					+ '\" class=\"link-button\">' + list[i].Id + '</button></form></td></tr>';
 				}
 			} else if (type == 'Titles') {
-				body += '<form id=\"showEntry\" method=\"post\" action=\"/CSE305Entry.html\"><table align=\"center\">';
 				/* Set up headers for Show attributes */
-				body += '<th>Title</th><th>Year</th>';
+				body += '<table align=\"center\"><th>Title</th><th>Year</th>';
 				/* Create a new row in the table for each search result */
 				var i;
 				for (i = 0; i < list.length; i++) {
 					body += '<tr><td>' + list[i].ShowTitle + '</td><td>'
+					+ '<form id=\"showEntry\" method=\"post\" action=\"/CSE305Entry.html\">'
 					+ '<input type=\"hidden\" name=\"Type\" value=\"Show\">'
 					+ '<button type=\"submit\" name=\"Key\" value=\"' + list[i].ShowTitle + ',' + list[i].ShowYear
-					+ '\" class=\"link-button\">' + list[i].ShowYear + '</button></td></tr>';
+					+ '\" class=\"link-button\">' + list[i].ShowYear + '</button></form></td></tr>';
 				}
 			}
 			/* Close the table and finish the body var */
-			body += '</table></form>'
+			body += '</table>';
 		} else {
 			/* If results list is empty, display "No results found!" on response page */
 			body += "<h1>No results found!</h1>";
@@ -380,7 +380,7 @@ function buildPersonEntry(type, entry) {
 						html += '</table>';
 					}
 				}
-			}).then(			
+			}).then(
 			getPersonAwards(entry[0].Id, function(result) {
 				awards = result;
 				html += '<h3>Awards</h3>';
@@ -424,7 +424,7 @@ function buildShowEntry(type, entry) {
 					+ '<head><link rel=\"stylesheet\" href=\"style.css\">'
 					+ '<title>IMDaveBen</title></head>'
 					+ '<body><img src=\"logo.png\" alt="IMDaveBen" class = \"centerImage\">'
-					+ '<div class = \"center\"><a href=\"/\">Back to query page</a>';
+					+ '<div class=\"center"><a href=\"/\">Back to query page</a>';
 		if (type == 'Null') {
 			html += '<h1>Entry does not exist!<h1>';
 		} else if (type == 'Show' && entry != '') {
@@ -436,8 +436,8 @@ function buildShowEntry(type, entry) {
 					+ '<h3>' + entry[0].StudioName + '</h3>'
 					+ '<h3>' + entry[0].ShowYear + '</h3>'
 					+ '<p>' + entry[0].Genre + '<br>'
-					+ entry[0].Reviews + '<br>'
-					+ entry[0].Runtime + '<br>'
+					+ entry[0].Reviews + '/10<br>'
+					+ entry[0].Runtime + ' minutes<br>'
 					+ entry[0].Rating + '<br></p>'
 					+ '<h3>Synopsis</h3>'
 					+ '<p>' + entry[0].Synopsis + '</p>';
@@ -451,7 +451,7 @@ function buildShowEntry(type, entry) {
 						var i;
 						for (i = 0; i < cast.length; i++) {
 							html += '<tr><td>' + cast[i].CharacterName + '</td>'
-									/*+ '<td>' + cast[i].PersonName + '</td>'*/
+									+ '<td>' /*+ cast[i].PersonName*/ + '</td>'
 									+ '<td>' + cast[i].Role + '</td></tr>';
 						}
 						html += '</table>';
@@ -473,17 +473,18 @@ function buildShowEntry(type, entry) {
 						html += '</table>';
 					}
 				}
+				
+				/* Complete HTML code by closing tags. */
+				html += '</div></body></html>';
+				/* Write completed HTML code to CSE305Response.html */
+				fs.writeFile(entryFile, html, function (err) {
+					if (err) { reject(err);	}
+					resolve(true);
+				});
 			}));
 		} else {
 			console.log('Invalid entry request!');
 			reject('Invalid entry request!');
 		}
-		/* Complete HTML code by closing tags. */
-		html += '</div></body></html>';
-		/* Write completed HTML code to CSE305Response.html */
-		fs.writeFile(entryFile, html, function (err) {
-			if (err) { reject(err);	}
-			resolve(true);
-		});
 	});
 }
