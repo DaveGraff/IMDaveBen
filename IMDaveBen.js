@@ -111,7 +111,7 @@ app.post('/CSE305Entry.html', (req, res) => {
 	console.log(postBody);
 	if (postBody.Type == 'Person') {
 		getPerson(postBody.ID, function(person) {
-			if (person == '' || person.length == 0) {
+			if (person == undefined || person == '' || person.length == 0) {
 				console.log('Person not found!');
 				page = buildPersonEntry('Null', person);
 				page.then(
@@ -136,7 +136,7 @@ app.post('/CSE305Entry.html', (req, res) => {
 		var title = postBody.Key.substring(0, ind);
 		var year = postBody.Key.substring(ind + 1);
 		getTitle(title, year, function(show) {
-			if (show == '' || show.length == 0) {
+			if (show == undefined || show == '' || show.length == 0) {
 				console.log('Show not found!');
 				page = buildShowEntry('Null', show);
 				page.then(
@@ -206,21 +206,21 @@ function getPerson(id, callback){
 }
 
 function getPersonCastRoles(id, callback){
-	con.query("SELECT * FROM CastMembers WHERE Id = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
+	con.query("SELECT * FROM CastMembers WHERE PersonId = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
 	if (err) throw err;
 		return callback(result);
 	});
 }
 
 function getPersonCrewRoles(id, callback){
-	con.query("SELECT * FROM CrewMembers WHERE Id = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
+	con.query("SELECT * FROM CrewMembers WHERE PersonId = " + id + " ORDER BY ShowYear, ShowTitle;", function (err, result, fields) {
 	if (err) throw err;
 		return callback(result);
 	});
 }
 
 function getPersonAwards(id, callback){
-	con.query("SELECT AwardName, YearAwarded FROM Award WHERE Id = " + id + " ORDER BY YearAwarded;", function (err, result, fields) {
+	con.query("SELECT AwardName, YearAwarded FROM Award WHERE PersonId = " + id + " ORDER BY YearAwarded;", function (err, result, fields) {
 	if (err) throw err;
 		return callback(result);
 	});
@@ -325,20 +325,52 @@ function buildPersonEntry(type, entry) {
 			if (type == 'Person') {
 				html += '<h1>' + entry[0].PersonName + '</h1>'
 						+ '<p>DOB:' + entry[0].DOB
-						+ '<br>Hometown:' + entry[0].Hometown
-						+ '<br>Height:' + entry[0].Height
-						+ '<br>Gender:' + entry[0].Gender
-						+ '</p>';
-				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
-						+ '<p>DOB: ' + entry[0].DOB
 						+ '<br>Hometown: ' + entry[0].Hometown
 						+ '<br>Height: ' + entry[0].Height
 						+ '<br>Gender: ' + entry[0].Gender
 						+ '</p>';
 				html += '<h2>Biography</h2><p>' + entry[0].Biography + '</p>';
-				html += '<h3>Cast Roles</h3>';
-				html += '<h3>Crew Roles</h3>';
+				/* Query database for list of roles that this Person has had */
+				html += '<h3>Credits</h3>';
+				getPersonCastRoles(entry[0].Id, function(cast) {
+					if (cast != undefined && cast != '' && cast.length != 0) {
+						html += '<table align=\"center\"><th>Character Name</th><th>Role</th><th>Show Title</th><th>Year</th>';
+						var i;
+						for (i = 0; i < cast.length; i++) {
+							html += '<tr><td>' + cast[i].CharacterName + '</td>'
+									+ '<td>' + cast[i].Role + '</td>'
+									+ '<td>' + cast[i].showTitle + '</td>'
+									+ '<td>' + cast[i].ShowYear + '</td></tr>';
+						}
+						html += '</table>';
+					}
+				});
+				getPersonCrewRoles(entry[0].Id, function(crew) {
+					if (crew != undefined && crew != '' && crew.length != 0) {
+						html += '<table align=\"center\"><th>Role</th><th>Show Title</th><th>Year</th>';
+						var i;
+						for (i = 0; i < crew.length; i++) {
+							html += '<tr><td>' + crew[i].Role + '</td>'
+									+ '<td>' + crew[i].showTitle + '</td>'
+									+ '<td>' + crew[i].Year + '</td></tr>';
+						}
+						html += '</table>';
+					}
+				});
+				/* Query database for all awards */
 				html += '<h3>Awards</h3>';
+				getPersonAwards(entry[0].Id, function(awards) {
+					if (awards != undefined && awards != '' && awards.length != 0) {
+						html += '<table align=\"center\"><th>Academy</th><th>Award Name</th><th>Year Awarded</th>';
+						var i;
+						for (i = 0; i < awards.length; i++) {
+							html += '<tr><td>' + awards[i].Academy + '</td>'
+									+ '<td>' + crew[i].AwardName + '</td>'
+									+ '<td>' + crew[i].YearAwarded + '</td></tr>';
+						}
+						html += '</table>';
+					}
+				});
 			} else {
 				console.log('Invalid entry request!');
 				reject('Invalid entry request!');
